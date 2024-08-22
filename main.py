@@ -1,413 +1,123 @@
-#
-# import streamlit as st
-# from googletrans import Translator
-# from PyPDF2 import PdfReader
-# import io
-#
-# # Initialize the translator
-# translator = Translator()
-#
-# # Supported languages
-# LANGUAGES = {
-#     'af': 'Afrikaans',
-#     'sq': 'Albanian',
-#     'am': 'Amharic',
-#     'ar': 'Arabic',
-#     'hy': 'Armenian',
-#     'az': 'Azerbaijani',
-#     'eu': 'Basque',
-#     'be': 'Belarusian',
-#     'bn': 'Bengali',
-#     'bs': 'Bosnian',
-#     'bg': 'Bulgarian',
-#     'ca': 'Catalan',
-#     'ceb': 'Cebuano',
-#     'ny': 'Chichewa',
-#     'zh-cn': 'Chinese (Simplified)',
-#     'zh-tw': 'Chinese (Traditional)',
-#     'co': 'Corsican',
-#     'hr': 'Croatian',
-#     'cs': 'Czech',
-#     'da': 'Danish',
-#     'nl': 'Dutch',
-#     'en': 'English',
-#     'eo': 'Esperanto',
-#     'et': 'Estonian',
-#     'tl': 'Filipino',
-#     'fi': 'Finnish',
-#     'fr': 'French',
-#     'fy': 'Frisian',
-#     'gl': 'Galician',
-#     'ka': 'Georgian',
-#     'de': 'German',
-#     'el': 'Greek',
-#     'gu': 'Gujarati',
-#     'ht': 'Haitian Creole',
-#     'ha': 'Hausa',
-#     'haw': 'Hawaiian',
-#     'iw': 'Hebrew',
-#     'hi': 'Hindi',
-#     'hmn': 'Hmong',
-#     'hu': 'Hungarian',
-#     'is': 'Icelandic',
-#     'ig': 'Igbo',
-#     'id': 'Indonesian',
-#     'ga': 'Irish',
-#     'it': 'Italian',
-#     'ja': 'Japanese',
-#     'jw': 'Javanese',
-#     'kn': 'Kannada',
-#     'kk': 'Kazakh',
-#     'km': 'Khmer',
-#     'ko': 'Korean',
-#     'ku': 'Kurdish (Kurmanji)',
-#     'ky': 'Kyrgyz',
-#     'lo': 'Lao',
-#     'la': 'Latin',
-#     'lv': 'Latvian',
-#     'lt': 'Lithuanian',
-#     'lb': 'Luxembourgish',
-#     'mk': 'Macedonian',
-#     'mg': 'Malagasy',
-#     'ms': 'Malay',
-#     'ml': 'Malayalam',
-#     'mt': 'Maltese',
-#     'mi': 'Maori',
-#     'mr': 'Marathi',
-#     'mn': 'Mongolian',
-#     'my': 'Myanmar (Burmese)',
-#     'ne': 'Nepali',
-#     'no': 'Norwegian',
-#     'or': 'Odia',
-#     'ps': 'Pashto',
-#     'fa': 'Persian',
-#     'pl': 'Polish',
-#     'pt': 'Portuguese',
-#     'pa': 'Punjabi',
-#     'ro': 'Romanian',
-#     'ru': 'Russian',
-#     'sm': 'Samoan',
-#     'gd': 'Scots Gaelic',
-#     'sr': 'Serbian',
-#     'st': 'Sesotho',
-#     'sn': 'Shona',
-#     'sd': 'Sindhi',
-#     'si': 'Sinhala',
-#     'sk': 'Slovak',
-#     'sl': 'Slovenian',
-#     'so': 'Somali',
-#     'es': 'Spanish',
-#     'su': 'Sundanese',
-#     'sw': 'Swahili',
-#     'sv': 'Swedish',
-#     'tg': 'Tajik',
-#     'ta': 'Tamil',
-#     'te': 'Telugu',
-#     'th': 'Thai',
-#     'tr': 'Turkish',
-#     'uk': 'Ukrainian',
-#     'ur': 'Urdu',
-#     'ug': 'Uyghur',
-#     'uz': 'Uzbek',
-#     'vi': 'Vietnamese',
-#     'cy': 'Welsh',
-#     'xh': 'Xhosa',
-#     'yi': 'Yiddish',
-#     'yo': 'Yoruba',
-#     'zu': 'Zulu'
-# }
-#
-# def extract_text_from_pdf(file):
-#     pdf_reader = PdfReader(file)
-#     text = ""
-#     for page in pdf_reader.pages:
-#         text += page.extract_text()
-#     return text
-#
-# def translate_text(text, dest_language):
-#     return translator.translate(text, dest=dest_language).text
-#
-# def translate_markdown(markdown_text, dest_language):
-#     lines = markdown_text.split('\n')
-#     translated_lines = []
-#     for line in lines:
-#         if line.strip() == '':
-#             translated_lines.append('')
-#         else:
-#             translated = translator.translate(line, dest=dest_language).text
-#             translated_lines.append(translated)
-#     return '\n'.join(translated_lines)
-#
-# def main():
-#     st.set_page_config(page_title="Markdown Translator", layout="wide")
-#     st.title("📄 Markdown Translator")
-#
-#     col1, col2 = st.columns(2)
-#
-#     with st.sidebar:
-#         st.header("Upload Document")
-#         uploaded_file = st.file_uploader("Choose a Markdown file", type=["md", "txt", "pdf"])
-#
-#         target_language = st.selectbox(
-#             "Select target language",
-#             options=list(LANGUAGES.values()),
-#             index=list(LANGUAGES.values()).index("Spanish")
-#         )
-#
-#         if uploaded_file is not None:
-#             file_details = {
-#                 "filename": uploaded_file.name,
-#                 "filetype": uploaded_file.type,
-#                 "filesize": uploaded_file.size
-#             }
-#             st.write(file_details)
-#
-#             if st.button("Translate"):
-#                 if uploaded_file.type == "application/pdf":
-#                     raw_text = extract_text_from_pdf(uploaded_file)
-#                 else:
-#                     raw_text = uploaded_file.read().decode("utf-8")
-#
-#                 with st.spinner("Translating..."):
-#                     dest_code = list(LANGUAGES.keys())[list(LANGUAGES.values()).index(target_language)]
-#                     translated_text = translate_markdown(raw_text, dest_code)
-#
-#                 col1.subheader("Original Content")
-#                 col1.markdown(raw_text)
-#
-#                 col2.subheader("Translated Content")
-#                 col2.markdown(translated_text)
-#
-#                 translated_bytes = translated_text.encode('utf-8')
-#                 st.download_button(
-#                     label="Download Translated Markdown",
-#                     data=translated_bytes,
-#                     file_name=f"translated_{uploaded_file.name}",
-#                     mime="text/markdown"
-#                 )
-#
-#     with st.expander("🔤 Real-Time Translation"):
-#         st.subheader("Type text below for instant translation")
-#
-#         text_to_translate = st.text_area("Enter text here...")
-#         if text_to_translate:
-#             dest_code = list(LANGUAGES.keys())[list(LANGUAGES.values()).index(target_language)]
-#             translated_text = translate_text(text_to_translate, dest_code)
-#             st.subheader("Translated Text")
-#             st.write(translated_text)
-#
-# if __name__ == "__main__":
-#     main()
 import streamlit as st
-from googletrans import Translator
+import deepl
 from PyPDF2 import PdfReader
 
-# Initialize the translator
-translator = Translator()
+def translate_text(text, target_lang, auth_key):
+    translator = deepl.Translator(auth_key)
+    result = translator.translate_text(text, target_lang=target_lang)
+    return result.text
 
-# Supported languages
-LANGUAGES = {
-    'af': 'Afrikaans',
-    'sq': 'Albanian',
-    'am': 'Amharic',
-    'ar': 'Arabic',
-    'hy': 'Armenian',
-    'az': 'Azerbaijani',
-    'eu': 'Basque',
-    'be': 'Belarusian',
-    'bn': 'Bengali',
-    'bs': 'Bosnian',
-    'bg': 'Bulgarian',
-    'ca': 'Catalan',
-    'ceb': 'Cebuano',
-    'ny': 'Chichewa',
-    'zh-cn': 'Chinese (Simplified)',
-    'zh-tw': 'Chinese (Traditional)',
-    'co': 'Corsican',
-    'hr': 'Croatian',
-    'cs': 'Czech',
-    'da': 'Danish',
-    'nl': 'Dutch',
-    'en': 'English',
-    'eo': 'Esperanto',
-    'et': 'Estonian',
-    'tl': 'Filipino',
-    'fi': 'Finnish',
-    'fr': 'French',
-    'fy': 'Frisian',
-    'gl': 'Galician',
-    'ka': 'Georgian',
-    'de': 'German',
-    'el': 'Greek',
-    'gu': 'Gujarati',
-    'ht': 'Haitian Creole',
-    'ha': 'Hausa',
-    'haw': 'Hawaiian',
-    'iw': 'Hebrew',
-    'hi': 'Hindi',
-    'hmn': 'Hmong',
-    'hu': 'Hungarian',
-    'is': 'Icelandic',
-    'ig': 'Igbo',
-    'id': 'Indonesian',
-    'ga': 'Irish',
-    'it': 'Italian',
-    'ja': 'Japanese',
-    'jw': 'Javanese',
-    'kn': 'Kannada',
-    'kk': 'Kazakh',
-    'km': 'Khmer',
-    'ko': 'Korean',
-    'ku': 'Kurdish (Kurmanji)',
-    'ky': 'Kyrgyz',
-    'lo': 'Lao',
-    'la': 'Latin',
-    'lv': 'Latvian',
-    'lt': 'Lithuanian',
-    'lb': 'Luxembourgish',
-    'mk': 'Macedonian',
-    'mg': 'Malagasy',
-    'ms': 'Malay',
-    'ml': 'Malayalam',
-    'mt': 'Maltese',
-    'mi': 'Maori',
-    'mr': 'Marathi',
-    'mn': 'Mongolian',
-    'my': 'Myanmar (Burmese)',
-    'ne': 'Nepali',
-    'no': 'Norwegian',
-    'or': 'Odia',
-    'ps': 'Pashto',
-    'fa': 'Persian',
-    'pl': 'Polish',
-    'pt': 'Portuguese',
-    'pa': 'Punjabi',
-    'ro': 'Romanian',
-    'ru': 'Russian',
-    'sm': 'Samoan',
-    'gd': 'Scots Gaelic',
-    'sr': 'Serbian',
-    'st': 'Sesotho',
-    'sn': 'Shona',
-    'sd': 'Sindhi',
-    'si': 'Sinhala',
-    'sk': 'Slovak',
-    'sl': 'Slovenian',
-    'so': 'Somali',
-    'es': 'Spanish',
-    'su': 'Sundanese',
-    'sw': 'Swahili',
-    'sv': 'Swedish',
-    'tg': 'Tajik',
-    'ta': 'Tamil',
-    'te': 'Telugu',
-    'th': 'Thai',
-    'tr': 'Turkish',
-    'uk': 'Ukrainian',
-    'ur': 'Urdu',
-    'ug': 'Uyghur',
-    'uz': 'Uzbek',
-    'vi': 'Vietnamese',
-    'cy': 'Welsh',
-    'xh': 'Xhosa',
-    'yi': 'Yiddish',
-    'yo': 'Yoruba',
-    'zu': 'Zulu'
-}
-
-def extract_text_from_pdf(file):
-    pdf_reader = PdfReader(file)
+def extract_text_from_pdf(pdf_file):
+    pdf_reader = PdfReader(pdf_file)
     text = ""
     for page in pdf_reader.pages:
-        text += page.extract_text()
+        text += page.extract_text() or ""
     return text
 
-def translate_text(text, dest_language):
-    return translator.translate(text, dest=dest_language).text
-
-def translate_markdown(markdown_text, dest_language):
-    lines = markdown_text.split('\n')
-    translated_lines = []
-    for line in lines:
-        if line.strip() == '':
-            translated_lines.append('')
-        else:
-            translated = translator.translate(line, dest=dest_language).text
-            translated_lines.append(translated)
-    return '\n'.join(translated_lines)
+def download_button(content, filename, label="Download"):
+    st.download_button(
+        label=label,
+        data=content,
+        file_name=filename,
+        mime='text/plain',
+    )
 
 def main():
-    st.set_page_config(page_title="Markdown Translator", layout="wide")
-    st.title("📄 Markdown Translator")
+    st.title("DeepL Translator Web App")
 
-    col1, col2 = st.columns(2)
+    # Input for DeepL API key
+    auth_key = st.text_input("Enter your DeepL API Key", type="password")
 
-    with st.sidebar:
-        st.header("Upload Document")
-        uploaded_file = st.file_uploader("Choose a Markdown file", type=["md", "txt", "pdf"])
+    if auth_key:
+        # Upload multiple files
+        uploaded_files = st.file_uploader("Upload your Markdown or PDF files", type=['pdf', 'md'],
+                                          accept_multiple_files=True)
 
-        target_language = st.selectbox(
-            "Select target language",
-            options=list(LANGUAGES.values()),
-            index=list(LANGUAGES.values()).index("Spanish")
-        )
+        if uploaded_files:
+            col1, col2 = st.columns(2, gap="medium")
+            with col1:
+                st.subheader("Uploaded Content")
+                for uploaded_file in uploaded_files:
+                    if uploaded_file.type == "application/pdf":
+                        content = extract_text_from_pdf(uploaded_file)
+                    else:
+                        content = uploaded_file.read().decode("utf-8")
 
-        if uploaded_file is not None:
-            file_details = {
-                "filename": uploaded_file.name,
-                "filetype": uploaded_file.type,
-                "filesize": uploaded_file.size
-            }
-            st.write(file_details)
+                    st.markdown(f"**File:** {uploaded_file.name}", unsafe_allow_html=True)
+                    st.text_area("Original Content", content, height=300, key=uploaded_file.name)
 
-            if st.button("Translate"):
-                if uploaded_file.type == "application/pdf":
-                    raw_text = extract_text_from_pdf(uploaded_file)
-                else:
-                    raw_text = uploaded_file.read().decode("utf-8")
+            with col2:
+                st.subheader("Translated Content")
 
-                with st.spinner("Translating..."):
-                    dest_code = list(LANGUAGES.keys())[list(LANGUAGES.values()).index(target_language)]
-                    translated_text = translate_markdown(raw_text, dest_code)
+                # Extensive language list including Indian languages
+                languages = {
+                    "Bulgarian": "BG",
+                    "Chinese (Simplified)": "ZH",
+                    "Czech": "CS",
+                    "Danish": "DA",
+                    "Dutch": "NL",
+                    "English (British)": "EN-GB",
+                    "English (American)": "EN-US",
+                    "Estonian": "ET",
+                    "Finnish": "FI",
+                    "French": "FR",
+                    "German": "DE",
+                    "Greek": "EL",
+                    "Hindi": "HI",
+                    "Bengali": "BN",
+                    "Tamil": "TA",
+                    "Telugu": "TE",
+                    "Kannada": "KN",
+                    "Malayalam": "ML",
+                    "Marathi": "MR",
+                    "Gujarati": "GU",
+                    "Hungarian": "HU",
+                    "Indonesian": "ID",
+                    "Italian": "IT",
+                    "Japanese": "JA",
+                    "Korean": "KO",
+                    "Latvian": "LV",
+                    "Lithuanian": "LT",
+                    "Norwegian": "NO",
+                    "Polish": "PL",
+                    "Portuguese (Brazilian)": "PT-BR",
+                    "Portuguese (European)": "PT-PT",
+                    "Romanian": "RO",
+                    "Russian": "RU",
+                    "Slovak": "SK",
+                    "Slovenian": "SL",
+                    "Spanish": "ES",
+                    "Swedish": "SV",
+                    "Turkish": "TR",
+                    "Ukrainian": "UK"
+                }
 
-                col1.subheader("Original Content")
-                col1.markdown(raw_text)
+                target_language_name = st.selectbox("Select target language", list(languages.keys()))
+                target_language = languages[target_language_name]
 
-                col2.subheader("Translated Content")
-                col2.markdown(translated_text)
+                if st.button("Translate"):
+                    with st.spinner("Translating..."):
+                        for uploaded_file in uploaded_files:
+                            if uploaded_file.type == "application/pdf":
+                                content = extract_text_from_pdf(uploaded_file)
+                            else:
+                                content = uploaded_file.read().decode("utf-8")
 
-                # Show balloons and a success message
-                st.balloons()
-                st.success("🎉 Translation completed successfully!")
+                            try:
+                                translated_content = translate_text(content, target_language, auth_key)
 
-                # Provide a download button for the translated content
-                translated_bytes = translated_text.encode('utf-8')
-                st.download_button(
-                    label="Download Translated Markdown",
-                    data=translated_bytes,
-                    file_name=f"translated_{uploaded_file.name}",
-                    mime="text/markdown"
-                )
+                                # Display translated content
+                                st.markdown(f"**File:** {uploaded_file.name}", unsafe_allow_html=True)
+                                st.text_area("Translated Content", translated_content, height=300, key=f"{uploaded_file.name}_translated")
 
-                # Copy to Clipboard button
-                if st.button("Copy to Clipboard"):
-                    pyperclip.copy(translated_text)
-                    st.success("📋 Text copied to clipboard!")
+                                # Button to download translated text
+                                download_button(translated_content, f"{uploaded_file.name}_translated.txt", "Download Translated Text")
 
-    with st.expander("🔤 Real-Time Translation"):
-        st.subheader("Type text below for instant translation")
+                                # Display balloons on successful translation
+                                st.balloons()
 
-        text_to_translate = st.text_area("Enter text here...")
-        if text_to_translate:
-            dest_code = list(LANGUAGES.keys())[list(LANGUAGES.values()).index(target_language)]
-            translated_text = translate_text(text_to_translate, dest_code)
-            st.subheader("Translated Text")
-            st.write(translated_text)
-
-            # Copy to Clipboard button for real-time translation
-            if st.button("Copy Real-Time Translation to Clipboard"):
-                pyperclip.copy(translated_text)
-                st.success("📋 Real-time translation copied to clipboard!")
+                            except Exception as e:
+                                st.error(f"Translation failed: {e}")
 
 if __name__ == "__main__":
     main()
