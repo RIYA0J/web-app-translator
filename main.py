@@ -389,12 +389,10 @@ def main():
                     mime="text/markdown"
                 )
 
-                # Share button (Simulated)
-                st.markdown("[Share this translation](#)", unsafe_allow_html=True)
-
-                # Snow animation as an alternative effect
-                if st.button("Celebrate!"):
-                    st.snow()
+                # Copy to Clipboard button
+                if st.button("Copy to Clipboard"):
+                    pyperclip.copy(translated_text)
+                    st.success("📋 Text copied to clipboard!")
 
     with st.expander("🔤 Real-Time Translation"):
         st.subheader("Type text below for instant translation")
@@ -405,6 +403,11 @@ def main():
             translated_text = translate_text(text_to_translate, dest_code)
             st.subheader("Translated Text")
             st.write(translated_text)
+
+            # Copy to Clipboard button for real-time translation
+            if st.button("Copy Real-Time Translation to Clipboard"):
+                pyperclip.copy(translated_text)
+                st.success("📋 Real-time translation copied to clipboard!")
 
 if __name__ == "__main__":
     main()
